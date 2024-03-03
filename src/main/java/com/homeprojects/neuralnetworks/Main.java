@@ -22,8 +22,8 @@ public class Main {
 
         NeuralNetwork network = new NeuralNetwork(
                 io,
-                1, 2, 8,
-                new int[]{5, 2},
+                1, 1, 9,
+                new int[]{1},
                 0.01
         );
 
@@ -32,23 +32,24 @@ public class Main {
 
     private static SimpleMatrix zeroOne() {
         return new SimpleMatrix(new double[][]{
-                new double[]{1, 1, 0},
-                new double[]{2, 1, 0},
-                new double[]{-1, 0, 1},
-                new double[]{-3, 0, 1},
-                new double[]{5, 1, 0},
-                new double[]{-10, 0, 1},
-                new double[]{10, 1, 0},
-                new double[]{-2, 0, 1},
-//                new double[] { 0, 1, 0},
+                new double[]{1, 1},
+                new double[]{2, 1},
+                new double[]{-1, 0},
+                new double[]{-3, 0},
+                new double[]{5, 1},
+                new double[]{-10, 0},
+                new double[]{10, 1},
+                new double[]{-2, 0},
+                new double[] { 0, 1},
                 // test data
-                new double[]{3, 1, 0},
-                new double[]{4, 1, 0},
-                new double[]{-2, 0, 1},
-                new double[]{-5, 0, 1},
-                new double[]{6, 1, 0},
-                new double[]{-9, 0, 1},
-                new double[]{8, 1, 0},
+                new double[]{3, 1},
+                new double[]{4, 1},
+                new double[]{-2, 0},
+                new double[]{-5, 0},
+                new double[]{6, 1},
+                new double[]{-9, 0},
+                new double[] { 0, 1},
+                new double[]{8, 1},
         });
     }
 

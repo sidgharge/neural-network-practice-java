@@ -64,9 +64,9 @@ public class NeuralNetwork {
     }
 
     public void start() {
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 500000; i++) {
             iterate();
-            if (i % 500 == 0) {
+            if (i % 5000 == 0) {
                 System.out.printf("cost(%d) = %.10f\n", i, cost());
             }
         }
@@ -79,7 +79,7 @@ public class NeuralNetwork {
         SimpleMatrix matrix = new SimpleMatrix(testInputs.getNumRows(), testInputs.getNumCols() + testOutputs.getNumCols());
 
         for (int i = 0; i < inputs.getNumRows(); i++) {
-            forward(i);
+            forward(inputs.getRow(i));
             matrix.setRow(i, inputs.getRow(i).concatColumns(layers.getLast().a().transpose()));
         }
         LoggerUtils.print("test", matrix);
