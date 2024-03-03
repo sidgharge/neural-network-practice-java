@@ -53,7 +53,7 @@ public class MatrixLevelMain {
         return new NeuralNetworkMatrix(
                 io,
                 1, 1, 9,
-                new int[]{1},
+                new int[]{2, 1},
                 0.01
         );
     }
