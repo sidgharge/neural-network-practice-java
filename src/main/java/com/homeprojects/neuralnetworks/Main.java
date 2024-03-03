@@ -8,24 +8,24 @@ public class Main {
 
     public static void main(String[] args) {
         LoggerUtils.debug = false;
-        SimpleMatrix io = zeroOne();
-
-//        NeuralNetwork network = new NeuralNetwork(
-//                io.cols(0, 2),
-//                io.cols(2, 3),
-//                io.cols(0, 2),
-//                io.cols(2, 3),
-////                new int[]{5, 15, 10, 5, 2},
-//                new int[]{4, 2, 1},
-//                0.01
-//        );
+        SimpleMatrix io = truthTableOr();
 
         NeuralNetwork network = new NeuralNetwork(
-                io,
-                1, 1, 9,
-                new int[]{1},
+                io.cols(0, 2),
+                io.cols(2, 3),
+                io.cols(0, 2),
+                io.cols(2, 3),
+//                new int[]{5, 15, 10, 5, 2},
+                new int[]{4, 2, 1},
                 0.01
         );
+
+//        NeuralNetwork network = new NeuralNetwork(
+//                io,
+//                1, 1, 9,
+//                new int[]{1},
+//                0.01
+//        );
 
         network.start();
     }

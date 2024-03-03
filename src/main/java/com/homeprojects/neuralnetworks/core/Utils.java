@@ -3,6 +3,9 @@ package com.homeprojects.neuralnetworks.core;
 import org.ejml.simple.SimpleMatrix;
 
 import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.DoubleFunction;
+import java.util.function.ToDoubleBiFunction;
 
 public class Utils {
 
@@ -28,6 +31,26 @@ public class Utils {
 
     public static SimpleMatrix elementOp(SimpleMatrix m, ElementOpWithIndices elementOp) {
         return m.elementOp(elementOp::op);
+    }
+
+    public static SimpleMatrix indexWiseOp(SimpleMatrix m1, SimpleMatrix m2, ToDoubleBiFunction<Double, Double> fn) {
+        SimpleMatrix o = new SimpleMatrix(m1.getNumRows(), m1.getNumCols());
+        for (int r = 0; r < m1.getNumRows(); r++) {
+            for (int c = 0; c < m1.getNumCols(); c++) {
+                o.set(r, c, fn.applyAsDouble(m1.get(r, c), m2.get(r, c)));
+            }
+        }
+        return o;
+    }
+
+    public static SimpleMatrix indexWiseOp(SimpleMatrix m, DoubleFunction<Double> fn) {
+        SimpleMatrix o = new SimpleMatrix(m.getNumRows(), m.getNumCols());
+        for (int r = 0; r < m.getNumRows(); r++) {
+            for (int c = 0; c < m.getNumCols(); c++) {
+                o.set(r, c, fn.apply(m.get(r, c)));
+            }
+        }
+        return o;
     }
 
     public static SimpleMatrix random(int numRows, int numCols, Random random) {
