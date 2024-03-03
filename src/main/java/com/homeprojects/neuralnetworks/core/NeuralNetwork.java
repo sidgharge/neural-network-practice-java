@@ -57,16 +57,16 @@ public class NeuralNetwork {
                 io.rows(0, inputRows).cols(0, numberOfInputColumns),
                 io.rows(0, inputRows).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
                 io.rows(inputRows, io.getNumRows()).cols(0, numberOfInputColumns),
-                io.rows(inputRows, io.getNumRows()).rows(0, inputRows).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
+                io.rows(inputRows, io.getNumRows()).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
                 layersNeuronsCount,
                 learningRate
         );
     }
 
     public void start() {
-        for (int i = 0; i < 250000; i++) {
+        for (int i = 0; i < 50000; i++) {
             iterate();
-            if (i % 5000 == 0) {
+            if (i % 500 == 0) {
                 System.out.printf("cost(%d) = %.10f\n", i, cost());
             }
         }
@@ -76,19 +76,13 @@ public class NeuralNetwork {
 
     private void test() {
         SimpleMatrix inputs = this.testInputs;
+        SimpleMatrix matrix = new SimpleMatrix(testInputs.getNumRows(), testInputs.getNumCols() + testOutputs.getNumCols());
+
         for (int i = 0; i < inputs.getNumRows(); i++) {
             forward(i);
-            StringBuilder row = new StringBuilder();
-            for (int j = 0; j < inputs.getNumCols(); j++) {
-                row.append(inputs.get(i, j)).append("\t");
-            }
-            row.append(": ");
-
-            for (int j = 0; j < outputs.getNumCols(); j++) {
-                row.append(layers.getLast().a().get(0, j)).append("\t");
-            }
-            System.out.println(row);
+            matrix.setRow(i, inputs.getRow(i).concatColumns(layers.getLast().a().transpose()));
         }
+        LoggerUtils.print("test", matrix);
     }
 
     private void iterate() {
@@ -104,7 +98,7 @@ public class NeuralNetwork {
             forward(inputs.getRow(i));
             SimpleMatrix yHat = layers.getLast().a();
             for (int j = 0; j < yHat.getNumCols(); j++) {
-                double diff = yHat.get(0, j) - outputs.get(i, j);
+                double diff = yHat.get(j, 0) - outputs.get(i, j);
                 cost += Math.pow(diff, 2);
             }
         }
