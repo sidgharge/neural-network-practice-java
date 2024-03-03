@@ -1,6 +1,6 @@
 package com.homeprojects.neuralnetworks.manual;
 
-import com.homeprojects.neuralnetworks.core.Utils;
+import com.homeprojects.neuralnetworks.core.LoggerUtils;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -56,7 +56,7 @@ public class Single1HiddenNoSig {
             System.out.printf("cost = %f\n", cost());
         }
         System.out.printf("w1 = %f\nb1 = %f\nw2 = %f\nb2 = %f\n", w1, b1, w2, b2);
-        Utils.printLine();
+        LoggerUtils.printLine();
 
         for (int i = -5; i < 5; i++) {
             forwardValue(i);

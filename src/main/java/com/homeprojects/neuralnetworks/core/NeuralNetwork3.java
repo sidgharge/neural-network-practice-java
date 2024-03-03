@@ -63,19 +63,19 @@ public class NeuralNetwork3 {
             SimpleMatrix w = layer.w();
             SimpleMatrix b = layer.b();
 
-            Utils.printDims("x", x);
-            Utils.printDims("w", w);
+            LoggerUtils.printDims("x", x);
+            LoggerUtils.printDims("w", w);
 
             SimpleMatrix temp = x.mult(w).transpose();
-            Utils.printDims("x * w", temp);
-            Utils.printDims("b", b);
+            LoggerUtils.printDims("x * w", temp);
+            LoggerUtils.printDims("b", b);
 
             temp = temp.plus(b);
             temp = Utils.elementOp(temp, (r, c, v) -> sigmoid(v));
-            Utils.printDims("a", temp);
+            LoggerUtils.printDims("a", temp);
             x = temp.transpose();
             layers.set(i, new Layer(layer.w(), layer.b(), temp));
-            Utils.printLine();
+            LoggerUtils.printLine();
         }
     }
 
@@ -112,10 +112,10 @@ public class NeuralNetwork3 {
         SimpleMatrix a = layer.a();
         SimpleMatrix db = Utils.elementOp(a.minus(outputs.getRow(index)), Utils::sigmoidDerivative);
 
-        Utils.printDims("db", db);
+        LoggerUtils.printDims("db", db);
 
         cache.put(layers.size() - 1, db);
-        Utils.printDims("layers.get(layers.size() - 2).a()", layers.get(layers.size() - 2).a());
+        LoggerUtils.printDims("layers.get(layers.size() - 2).a()", layers.get(layers.size() - 2).a());
         SimpleMatrix dw = db.mult(layers.get(layers.size() - 2).a());
         dw = Utils.elementOp(dw, v -> v * learningRate);
         db = Utils.elementOp(db, v -> v * learningRate);

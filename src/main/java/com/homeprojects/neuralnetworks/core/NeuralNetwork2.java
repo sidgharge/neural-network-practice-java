@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static com.homeprojects.neuralnetworks.core.Utils.printLine;
+import static com.homeprojects.neuralnetworks.core.LoggerUtils.printLine;
 import static com.homeprojects.neuralnetworks.core.Utils.sigmoid;
 import static com.homeprojects.neuralnetworks.core.Utils.sigmoidDerivative;
 

@@ -1,7 +1,7 @@
 package com.homeprojects.neuralnetworks.manual;
 
 import com.homeprojects.neuralnetworks.core.Layer;
-import com.homeprojects.neuralnetworks.core.Utils;
+import com.homeprojects.neuralnetworks.core.LoggerUtils;
 import org.ejml.simple.SimpleMatrix;
 
 import java.util.Random;
@@ -39,10 +39,10 @@ public class ManualLinearEquation {
 //            System.out.println("cost = " + main.cost().get(0, 0));
         }
 
-        Utils.printLine();
+        LoggerUtils.printLine();
         System.out.println("cost = " + main.cost().get(0, 0));
         System.out.println("W = " + main.layer.w().get(0, 0));
-        Utils.printLine();
+        LoggerUtils.printLine();
         for (int i = 0; i < main.x.getNumCols(); i++) {
             System.out.println(main.x.get(0, i) + " x 2 = " + main.layer.a().get(0, i));
         }

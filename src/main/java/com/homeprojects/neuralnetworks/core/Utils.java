@@ -3,7 +3,6 @@ package com.homeprojects.neuralnetworks.core;
 import org.ejml.simple.SimpleMatrix;
 
 import java.util.Random;
-import java.util.function.Function;
 
 public class Utils {
 
@@ -35,11 +34,8 @@ public class Utils {
         return SimpleMatrix.random_DDRM(numRows, numCols, -1, 1, random);
     }
 
-    public static void printDims(String name, SimpleMatrix matrix) {
-        System.out.printf("%s = %d x %d \n", name, matrix.getNumRows(), matrix.getNumCols());
+    public static void exit() {
+        System.exit(1);
     }
 
-    public static void printLine() {
-        System.out.println("---------------------------------------");
-    }
 }

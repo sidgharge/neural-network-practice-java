@@ -1,6 +1,7 @@
 package com.homeprojects.neuralnetworks.manual;
 
 import com.homeprojects.neuralnetworks.core.Layer;
+import com.homeprojects.neuralnetworks.core.LoggerUtils;
 import com.homeprojects.neuralnetworks.core.Utils;
 import org.ejml.simple.SimpleMatrix;
 
@@ -42,9 +43,9 @@ public class ManualLinearEquationWithBias {
             System.out.printf("cost = %.5f, weight = %.5f, bias = %.5f\n", main.cost().get(0, 0), main.layer.w().get(0, 0), main.layer.b().get(0, 0));
         }
 
-        Utils.printLine();
+        LoggerUtils.printLine();
         System.out.printf("cost = %.25f, \nweight = %.25f, \nbias = %.25f\n", main.cost().get(0, 0), main.layer.w().get(0, 0), main.layer.b().get(0, 0));
-        Utils.printLine();
+        LoggerUtils.printLine();
 //        for (int i = 0; i < main.x.getNumCols(); i++) {
 //            System.out.println(main.x.get(0, i) + " x 2 = " + main.layer.a().get(0, i));
 //        }
