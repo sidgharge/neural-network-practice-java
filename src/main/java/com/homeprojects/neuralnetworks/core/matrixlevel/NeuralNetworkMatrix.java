@@ -59,21 +59,21 @@ public class NeuralNetworkMatrix {
             inputs = a;
         }
     }
-    public NeuralNetworkMatrix(SimpleMatrix io, int numberOfInputColumns, int numberOfOutputColumns, int inputRows, int[] layersNeuronsCount, double learningRate) {
+    public NeuralNetworkMatrix(SimpleMatrix io, int numberOfInputRows, int numberOfOutputRows, int trainingCount, int[] layersNeuronsCount, double learningRate) {
         this(
-                io.rows(0, inputRows).cols(0, numberOfInputColumns),
-                io.rows(0, inputRows).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
-                io.rows(inputRows, io.getNumRows()).cols(0, numberOfInputColumns),
-                io.rows(inputRows, io.getNumRows()).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
+                io.cols(0, trainingCount).rows(0, numberOfInputRows),
+                io.cols(0, trainingCount).rows(numberOfInputRows, numberOfInputRows + numberOfOutputRows),
+                io.cols(trainingCount, io.getNumCols()).rows(0, numberOfInputRows),
+                io.cols(trainingCount, io.getNumCols()).rows(numberOfInputRows, numberOfInputRows + numberOfOutputRows),
                 layersNeuronsCount,
                 learningRate
         );
     }
 
     public void start() {
-        for (int i = 0; i < 250000; i++) {
+        for (int i = 0; i < 500000; i++) {
             iterate();
-            if (i % 5000 == 0) {
+            if (i % 10000 == 0) {
                 System.out.printf("cost(%d) = %.10f\n", i, cost());
             }
         }
@@ -221,7 +221,7 @@ public class NeuralNetworkMatrix {
         cache.put(deltaKey(l), deltaMatrix);
         LoggerUtils.printDims("delta", deltaMatrix);
 
-        SimpleMatrix prevA = layers.get(l - 1).a();
+        SimpleMatrix prevA = l == 0 ? inputs.getColumn(n) : layers.get(l - 1).a();
         LoggerUtils.printDims(String.format("a%d", l - 1), prevA);
 
         SimpleMatrix dw = deltaMatrix.mult(prevA.transpose());
