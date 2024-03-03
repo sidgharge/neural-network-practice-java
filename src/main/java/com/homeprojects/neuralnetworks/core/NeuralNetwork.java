@@ -1,6 +1,5 @@
 package com.homeprojects.neuralnetworks.core;
 
-import com.homeprojects.neuralnetworks.Main;
 import org.ejml.simple.SimpleMatrix;
 
 import java.util.ArrayList;
@@ -20,19 +19,25 @@ public class NeuralNetwork {
 
     private final SimpleMatrix outputs;
 
+    private final SimpleMatrix testInputs;
+
+    private final SimpleMatrix testOutputs;
+
     private final List<Layer> layers;
 
     private final double learningRate;
 
-    public NeuralNetwork(SimpleMatrix inputs, SimpleMatrix outputs, int[] layersNeuronsCount, double learningRate) {
-        this.outputs = outputs;
-        this.learningRate = learningRate;
-//        if (outputs.getNumCols() > 1) {
-//            throw new IllegalArgumentException(String.format("outputs array should have only one row stating only one output, got %s", outputs.getNumRows()));
-//        }
-        this.random = new Random(10);
+    public NeuralNetwork(SimpleMatrix inputs, SimpleMatrix outputs, SimpleMatrix testInputs, SimpleMatrix testOutputs, int[] layersNeuronsCount, double learningRate) {
         this.inputs = inputs;
+        this.outputs = outputs;
+        this.testInputs = testInputs;
+        this.testOutputs = testOutputs;
+        this.learningRate = learningRate;
+        this.random = new Random(10);
         this.layers = new ArrayList<>();
+
+        LoggerUtils.print("inputs", inputs);
+        LoggerUtils.print("outputs", outputs);
 
         for (int neuronsCount : layersNeuronsCount) {
             SimpleMatrix w = Utils.random(inputs.getNumCols(), neuronsCount, random);
@@ -47,11 +52,21 @@ public class NeuralNetwork {
             inputs = a.transpose();
         }
     }
+    public NeuralNetwork(SimpleMatrix io, int numberOfInputColumns, int numberOfOutputColumns, int inputRows, int[] layersNeuronsCount, double learningRate) {
+        this(
+                io.rows(0, inputRows).cols(0, numberOfInputColumns),
+                io.rows(0, inputRows).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
+                io.rows(inputRows, io.getNumRows()).cols(0, numberOfInputColumns),
+                io.rows(inputRows, io.getNumRows()).rows(0, inputRows).cols(numberOfInputColumns, numberOfInputColumns + numberOfOutputColumns),
+                layersNeuronsCount,
+                learningRate
+        );
+    }
 
     public void start() {
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 250000; i++) {
             iterate();
-            if (i % 1000 == 0) {
+            if (i % 5000 == 0) {
                 System.out.printf("cost(%d) = %.10f\n", i, cost());
             }
         }
@@ -60,20 +75,19 @@ public class NeuralNetwork {
     }
 
     private void test() {
-//        double[] iArray = new double[]  {5, -1, 3, 4, -6};
-//        SimpleMatrix inputs = new SimpleMatrix(iArray);
+        SimpleMatrix inputs = this.testInputs;
         for (int i = 0; i < inputs.getNumRows(); i++) {
             forward(i);
-            String inputRow = "";
+            StringBuilder row = new StringBuilder();
             for (int j = 0; j < inputs.getNumCols(); j++) {
-                inputRow += inputs.get(i, j) + "\t";
+                row.append(inputs.get(i, j)).append("\t");
             }
-            inputRow += ": ";
+            row.append(": ");
 
             for (int j = 0; j < outputs.getNumCols(); j++) {
-                inputRow += layers.getLast().a().get(0, j) + "\t";
+                row.append(layers.getLast().a().get(0, j)).append("\t");
             }
-            System.out.println(inputRow);
+            System.out.println(row);
         }
     }
 
