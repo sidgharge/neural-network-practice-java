@@ -23,9 +23,9 @@ public class ImageUtils {
 
         int w = random.nextInt(WIDTH);
         int h = random.nextInt(HEIGHT);
-//        if (w < 20 || h < 20) {
-//            return createRect(path);
-//        }
+        if (w < 20 || h < 20) {
+            return createRect(path);
+        }
         int x = random.nextInt(WIDTH - w);
         int y = random.nextInt(HEIGHT - h);
         graphics.setColor(Color.RED);
@@ -42,9 +42,9 @@ public class ImageUtils {
         graphics.fillRect(0, 0, WIDTH, HEIGHT);
 
         int d = random.nextInt(WIDTH);
-//        if (d < 20) {
-//            return createCircle(path);
-//        }
+        if (d < 20) {
+            return createCircle(path);
+        }
         int x = random.nextInt(WIDTH - d);
         int y = random.nextInt(HEIGHT - d);
         graphics.setColor(Color.RED);

@@ -70,7 +70,7 @@ public class Utils {
         System.exit(1);
     }
 
-    public static void serialize(NeuralNetworkMatrix network, String filepath) throws IOException {
+    public static void serialize(Object network, String filepath) throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(filepath);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(network);
@@ -79,11 +79,11 @@ public class Utils {
     }
 
 
-    public static NeuralNetworkMatrix deserialize(String filepath) throws ClassNotFoundException, IOException {
+    public static Object deserialize(String filepath) throws ClassNotFoundException, IOException {
         FileInputStream fileInputStream = new FileInputStream(filepath);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        NeuralNetworkMatrix network = (NeuralNetworkMatrix) objectInputStream.readObject();
+        Object o = objectInputStream.readObject();
         objectInputStream.close();
-        return network;
+        return o;
     }
 }

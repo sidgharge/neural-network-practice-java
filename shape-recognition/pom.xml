@@ -41,7 +41,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        com.homeprojects.neuralnetworks.imagerecognition.Main
+                                        com.homeprojects.neuralnetworks.imagerecognition.ImageRecognitionMain
                                     </mainClass>
                                 </manifest>
                             </archive>

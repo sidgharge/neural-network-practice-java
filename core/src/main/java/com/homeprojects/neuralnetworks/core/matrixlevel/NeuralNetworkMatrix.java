@@ -73,7 +73,7 @@ public class NeuralNetworkMatrix implements Serializable {
                 double cost = cost(this.inputs, this.outputs);
                 System.out.printf("cost(%d) = %.10f. Time taken: %ds\n", i, cost, Duration.between(start, Instant.now()).toSeconds());
                 start = Instant.now();
-                if (cost < 0.001) {
+                if (cost < 0.005) {
                     break;
                 }
             }

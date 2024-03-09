@@ -22,7 +22,8 @@ public class MatrixLevelCompleteMain {
                 io.rows(0, 2),
                 io.rows(2, 3),
                 new int[]{3, 1},
-                0.01
+                0.01,
+                20
         );
     }
 
@@ -36,7 +37,8 @@ public class MatrixLevelCompleteMain {
                 io.rows(0, 2),
                 io.rows(2, 3),
                 new int[]{4, 1},
-                0.1
+                0.1,
+                20
         );
 
         network.start(10000, 100, 0.0001);

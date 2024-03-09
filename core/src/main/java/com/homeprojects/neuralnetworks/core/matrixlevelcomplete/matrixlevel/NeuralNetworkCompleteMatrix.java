@@ -5,6 +5,9 @@ import com.homeprojects.neuralnetworks.core.LoggerUtils;
 import com.homeprojects.neuralnetworks.core.Utils;
 import org.ejml.simple.SimpleMatrix;
 
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +16,7 @@ import java.util.Random;
 
 import static com.homeprojects.neuralnetworks.core.Utils.sigmoid;
 
-public class NeuralNetworkCompleteMatrix {
+public class NeuralNetworkCompleteMatrix implements Serializable {
 
     private final Random random;
 
@@ -25,19 +28,21 @@ public class NeuralNetworkCompleteMatrix {
 
     private final double learningRate;
 
-    public NeuralNetworkCompleteMatrix(SimpleMatrix inputs, SimpleMatrix outputs, int[] layersNeuronsCount, double learningRate) {
+    private final int batchSize;
+
+    public NeuralNetworkCompleteMatrix(SimpleMatrix inputs, SimpleMatrix outputs, int[] layersNeuronsCount, double learningRate, int batchSize) {
         this.inputs = inputs;
         this.outputs = outputs;
         this.learningRate = learningRate;
+        this.batchSize = batchSize;
         this.random = new Random(10);
         this.layers = new ArrayList<>();
-
-        LoggerUtils.print("inputs", inputs);
-        LoggerUtils.print("outputs", outputs);
 
         for (int neuronsCount : layersNeuronsCount) {
             SimpleMatrix w = Utils.random(neuronsCount, inputs.getNumRows(), random);
             SimpleMatrix b = Utils.random(neuronsCount, 1, random);
+//            SimpleMatrix w = SimpleMatrix.filled(neuronsCount, inputs.getNumRows(), 0.5);
+//            SimpleMatrix b = SimpleMatrix.filled(neuronsCount, 1, 0.5);
             SimpleMatrix a = SimpleMatrix.filled(neuronsCount, inputs.getNumCols(), 0);
 
 //            LoggerUtils.print(String.format("w%d", layers.size()), w);
@@ -57,11 +62,13 @@ public class NeuralNetworkCompleteMatrix {
     }
 
     public void start(int maxIterations, int stepsToPrint, double maxAccuracy) {
+        Instant start = Instant.now();
         for (int i = 1; i <= maxIterations; i++) {
             iterate();
             if (i % stepsToPrint == 0) {
                 double cost = cost(this.inputs, this.outputs);
-                System.out.printf("cost(%d) = %.10f\n", i, cost);
+                System.out.printf("cost(%d) = %.10f. Time taken: %ds\n", i, cost, Duration.between(start, Instant.now()).toSeconds());
+                start = Instant.now();
                 if (cost <= maxAccuracy) {
                     System.out.println("Achieved max accuracy, hence stopping the training");
                     break;
@@ -71,16 +78,40 @@ public class NeuralNetworkCompleteMatrix {
         LoggerUtils.printLine();
     }
 
-    public void test(SimpleMatrix testInputs, SimpleMatrix testOutputs) {
+    public SimpleMatrix test(SimpleMatrix testInputs, SimpleMatrix testOutputs) {
         double cost = cost(testInputs, testOutputs);
-        SimpleMatrix matrix = testInputs.concatRows(layers.getLast().a());
-        LoggerUtils.print("test", matrix.transpose());
+//        SimpleMatrix matrix = testInputs.concatRows(layers.getLast().a());
         System.out.printf("cost(test) = %.10f", cost);
+        return layers.getLast().a();
+    }
+
+    public SimpleMatrix test(SimpleMatrix testInputs) {
+        forward(testInputs);
+//        SimpleMatrix matrix = testInputs.concatRows(layers.getLast().a());
+        return layers.getLast().a();
     }
 
     private void iterate() {
-        forward(inputs);
-        backpropagate();
+        int totalSamples = inputs.getNumCols();
+        int iterations = totalSamples / batchSize;
+        if (totalSamples % batchSize != 0) {
+            iterations++;
+        }
+        for (int i = 0; i < iterations; i++) {
+            int c0 = i * batchSize;
+            int c1 = (i + 1) * batchSize;
+            if (c1 > inputs.getNumCols()) {
+                c1 = inputs.getNumCols();
+            }
+            SimpleMatrix batchInputs = inputs.extractMatrix(0, inputs.getNumRows(), c0, c1);
+            SimpleMatrix batchOutputs = outputs.extractMatrix(0, outputs.getNumRows(), c0, c1);
+            forward(batchInputs);
+            backpropagate(batchInputs, batchOutputs);
+        }
+    }
+
+    public double cost() {
+        return cost(inputs, outputs);
     }
 
     private double cost(SimpleMatrix inputs, SimpleMatrix outputs) {
@@ -96,12 +127,8 @@ public class NeuralNetworkCompleteMatrix {
         return cost;
     }
 
-    private void forward(int index) {
-        forward(inputs.getRow(index));
-    }
-
-    private void forward(SimpleMatrix column) {
-        SimpleMatrix x = column;
+    private void forward(SimpleMatrix batchInputs) {
+        SimpleMatrix x = batchInputs;
         for (int l = 0; l < layers.size(); l++) {
             Layer layer = layers.get(l);
             SimpleMatrix w = layer.w();
@@ -122,12 +149,12 @@ public class NeuralNetworkCompleteMatrix {
         }
     }
 
-    private void backpropagate() {
+    private void backpropagate(SimpleMatrix batchInputs, SimpleMatrix batchOutputs) {
         Map<String, SimpleMatrix> cache = new HashMap<>();
-        lastLayerDerivatives(cache);
+        lastLayerDerivatives(cache, batchInputs, batchOutputs);
 
         for (int l = layers.size() - 2; l >= 0; l--) {
-            currentLayerDerivatives(l, cache);
+            currentLayerDerivatives(l, cache, batchInputs);
         }
         for (int l = layers.size() - 1; l >= 0; l--) {
             currentLayerAdjustments(l, cache);
@@ -147,6 +174,7 @@ public class NeuralNetworkCompleteMatrix {
                 double oldVal = w.get(r, c);
                 double dVal = dw.get(r, c);
                 double newVal = oldVal - (dVal * learningRate);
+//                System.out.printf("old val: %.10f, new val: %.10f\n", oldVal, newVal);
                 w.set(r, c, newVal);
             }
         }
@@ -169,11 +197,11 @@ public class NeuralNetworkCompleteMatrix {
     // l: current layer
     // j: jth neuron in current layer
     // k: kth neuron in next layer
-    private void currentLayerDerivatives(int l, Map<String, SimpleMatrix> cache) {
+    private void currentLayerDerivatives(int l, Map<String, SimpleMatrix> cache, SimpleMatrix batchInputs) {
         SimpleMatrix dzda = layers.get(l + 1).w();
         SimpleMatrix deltaMatrix = cache.get(deltaKey(l + 1));
         SimpleMatrix a = layers.get(l).a();
-        SimpleMatrix dzdw = (l == 0) ? inputs : layers.get(l - 1).a();
+        SimpleMatrix dzdw = (l == 0) ? batchInputs : layers.get(l - 1).a();
 
         SimpleMatrix temp = dzda.transpose().mult(deltaMatrix);
 
@@ -189,8 +217,8 @@ public class NeuralNetworkCompleteMatrix {
         cache.put(derivKey(l), temp);
     }
 
-    private void lastLayerDerivatives(Map<String, SimpleMatrix> cache) {
-        SimpleMatrix y = outputs;
+    private void lastLayerDerivatives(Map<String, SimpleMatrix> cache, SimpleMatrix batchInputs, SimpleMatrix batchOutputs) {
+        SimpleMatrix y = batchOutputs;
         Layer layer = layers.getLast();
         SimpleMatrix a = layer.a();
         int l = layers.size() - 1;
@@ -207,7 +235,7 @@ public class NeuralNetworkCompleteMatrix {
         cache.put(deltaKey(l), deltaMatrix);
 //        LoggerUtils.printDims("delta", deltaMatrix);
 
-        SimpleMatrix prevA = l == 0 ? inputs : layers.get(l - 1).a();
+        SimpleMatrix prevA = l == 0 ? batchInputs : layers.get(l - 1).a();
 //        LoggerUtils.printDims(String.format("a%d", l - 1), prevA);
 
         SimpleMatrix dw = deltaMatrix.mult(prevA.transpose());
