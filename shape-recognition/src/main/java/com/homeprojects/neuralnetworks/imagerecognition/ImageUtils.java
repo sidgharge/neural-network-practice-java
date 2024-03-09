@@ -11,9 +11,10 @@ public class ImageUtils {
 
     private static final Random random = new Random(10);
 
-    public static final int WIDTH = 32;
+    public static final int WIDTH = 64;
     public static final int HEIGHT = WIDTH;
 
+    private static final int MIN_SIZE = 20;
 
     public static BufferedImage createRect(String path) throws IOException {
         BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -23,13 +24,13 @@ public class ImageUtils {
 
         int w = random.nextInt(WIDTH);
         int h = random.nextInt(HEIGHT);
-        if (w < 20 || h < 20) {
+        if (w < MIN_SIZE || h < MIN_SIZE) {
             return createRect(path);
         }
         int x = random.nextInt(WIDTH - w);
         int y = random.nextInt(HEIGHT - h);
         graphics.setColor(Color.RED);
-        graphics.fillRect(x, y, w, h);
+        graphics.drawRect(x, y, w, h);
 
         ImageIO.write(image, "png", new File(path));
         return image;
@@ -42,13 +43,13 @@ public class ImageUtils {
         graphics.fillRect(0, 0, WIDTH, HEIGHT);
 
         int d = random.nextInt(WIDTH);
-        if (d < 20) {
+        if (d < MIN_SIZE) {
             return createCircle(path);
         }
         int x = random.nextInt(WIDTH - d);
         int y = random.nextInt(HEIGHT - d);
         graphics.setColor(Color.RED);
-        graphics.fillOval(x, y, d, d);
+        graphics.drawOval(x, y, d, d);
 
         ImageIO.write(image, "png", new File(path));
         return image;

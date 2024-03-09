@@ -14,7 +14,7 @@ import java.util.Scanner;
 import static com.homeprojects.neuralnetworks.imagerecognition.ImageUtils.createCircle;
 import static com.homeprojects.neuralnetworks.imagerecognition.ImageUtils.createRect;
 
-public class ImageRecognitionMain {
+public class ShapeRecognitionMain {
 
     private static final boolean SHOULD_GENERATE_FILES = false;
 
@@ -22,7 +22,9 @@ public class ImageRecognitionMain {
 
     private static final int SIZE_OF_TEST_DATA = 10;
 
-    private static final int BATCH_SIZE = 20;
+    private static final int BATCH_SIZE = 30;
+
+    private static final String NETWORK_LOC = "network/network3.bin";
 
     public static void main(String[] args) throws Exception {
         LoggerUtils.debug = false;
@@ -30,7 +32,7 @@ public class ImageRecognitionMain {
         System.out.println("Start time: " + start);
 
         NeuralNetworkCompleteMatrix network = train();
-//        NeuralNetworkCompleteMatrix network = (NeuralNetworkCompleteMatrix)Utils.deserialize("network/network2.bin");
+//        NeuralNetworkCompleteMatrix network = (NeuralNetworkCompleteMatrix)Utils.deserialize(NETWORK_LOC);
         System.out.println("network.cost() = " + network.cost());
         System.out.printf("Time taken %smins\n", Duration.between(start, Instant.now()).toMinutes());
         LoggerUtils.printLine();
@@ -56,7 +58,7 @@ public class ImageRecognitionMain {
         LoggerUtils.printDims("input", i);
         LoggerUtils.debug = false;
         NeuralNetworkCompleteMatrix network = new NeuralNetworkCompleteMatrix(i, o,
-                new int[]{10, 5, 2},
+                new int[]{20, 10, 2},
                 0.1,
                 BATCH_SIZE);
 
@@ -65,7 +67,7 @@ public class ImageRecognitionMain {
         network.start(5000, 50, 0.001);
 
         System.out.println("Training done.");
-        Utils.serialize(network, "network/network2.bin");
+        Utils.serialize(network, NETWORK_LOC);
         return network;
     }
 
