@@ -1,7 +1,16 @@
 package com.homeprojects.neuralnetworks.core;
 
+import com.homeprojects.neuralnetworks.core.matrixlevel.NeuralNetworkMatrix;
 import org.ejml.simple.SimpleMatrix;
 
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.DoubleFunction;
@@ -61,4 +70,20 @@ public class Utils {
         System.exit(1);
     }
 
+    public static void serialize(NeuralNetworkMatrix network, String filepath) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(filepath);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(network);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+    }
+
+
+    public static NeuralNetworkMatrix deserialize(String filepath) throws ClassNotFoundException, IOException {
+        FileInputStream fileInputStream = new FileInputStream(filepath);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        NeuralNetworkMatrix network = (NeuralNetworkMatrix) objectInputStream.readObject();
+        objectInputStream.close();
+        return network;
+    }
 }

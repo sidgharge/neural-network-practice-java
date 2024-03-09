@@ -7,7 +7,7 @@ public class MatrixLevelMain {
 
     public static void main(String[] args) {
         LoggerUtils.debug = false;
-        NeuralNetworkMatrix network = zeroOne();
+        NeuralNetworkMatrix network = truthTableAnd();
         network.start();
     }
 
@@ -19,8 +19,6 @@ public class MatrixLevelMain {
         });
 
         return new NeuralNetworkMatrix(
-                io.rows(0, 2),
-                io.rows(2, 3),
                 io.rows(0, 2),
                 io.rows(2, 3),
                 new int[]{3, 1},
@@ -35,8 +33,6 @@ public class MatrixLevelMain {
                 new double[]{1, 0, 0, 0},
         });
         return new NeuralNetworkMatrix(
-                io.rows(0, 2),
-                io.rows(2, 3),
                 io.rows(0, 2),
                 io.rows(2, 3),
                 new int[]{3, 1},

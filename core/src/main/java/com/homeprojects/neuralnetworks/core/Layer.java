@@ -2,7 +2,9 @@ package com.homeprojects.neuralnetworks.core;
 
 import org.ejml.simple.SimpleMatrix;
 
-public record Layer(SimpleMatrix w, SimpleMatrix b, SimpleMatrix a) {
+import java.io.Serializable;
+
+public record Layer(SimpleMatrix w, SimpleMatrix b, SimpleMatrix a) implements Serializable {
 
     public void print() {
         System.out.println("w = " + w);

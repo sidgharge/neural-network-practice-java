@@ -5,6 +5,9 @@ import com.homeprojects.neuralnetworks.core.LoggerUtils;
 import com.homeprojects.neuralnetworks.core.Utils;
 import org.ejml.simple.SimpleMatrix;
 
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +15,9 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.homeprojects.neuralnetworks.core.LoggerUtils.printLayerNumber;
-import static com.homeprojects.neuralnetworks.core.Utils.exit;
 import static com.homeprojects.neuralnetworks.core.Utils.sigmoid;
 
-public class NeuralNetworkMatrix {
+public class NeuralNetworkMatrix implements Serializable {
 
     private final Random random;
 
@@ -23,25 +25,16 @@ public class NeuralNetworkMatrix {
 
     private final SimpleMatrix outputs;
 
-    private final SimpleMatrix testInputs;
-
-    private final SimpleMatrix testOutputs;
-
     private final List<Layer> layers;
 
     private final double learningRate;
 
-    public NeuralNetworkMatrix(SimpleMatrix inputs, SimpleMatrix outputs, SimpleMatrix testInputs, SimpleMatrix testOutputs, int[] layersNeuronsCount, double learningRate) {
+    public NeuralNetworkMatrix(SimpleMatrix inputs, SimpleMatrix outputs, int[] layersNeuronsCount, double learningRate) {
         this.inputs = inputs;
         this.outputs = outputs;
-        this.testInputs = testInputs;
-        this.testOutputs = testOutputs;
         this.learningRate = learningRate;
         this.random = new Random(10);
         this.layers = new ArrayList<>();
-
-        LoggerUtils.print("inputs", inputs);
-        LoggerUtils.print("outputs", outputs);
 
         for (int neuronsCount : layersNeuronsCount) {
             SimpleMatrix w = Utils.random(neuronsCount, inputs.getNumRows(), random);
@@ -63,33 +56,41 @@ public class NeuralNetworkMatrix {
         this(
                 io.cols(0, trainingCount).rows(0, numberOfInputRows),
                 io.cols(0, trainingCount).rows(numberOfInputRows, numberOfInputRows + numberOfOutputRows),
-                io.cols(trainingCount, io.getNumCols()).rows(0, numberOfInputRows),
-                io.cols(trainingCount, io.getNumCols()).rows(numberOfInputRows, numberOfInputRows + numberOfOutputRows),
                 layersNeuronsCount,
                 learningRate
         );
     }
 
     public void start() {
-        for (int i = 0; i < 500000; i++) {
+        start(5000, 50);
+    }
+
+    public void start(int maxIterations, int printSteps) {
+        Instant start = Instant.now();
+        for (int i = 1; i <= maxIterations; i++) {
             iterate();
-            if (i % 10000 == 0) {
-                System.out.printf("cost(%d) = %.10f\n", i, cost());
+            if (i % printSteps == 0) {
+                double cost = cost(this.inputs, this.outputs);
+                System.out.printf("cost(%d) = %.10f. Time taken: %ds\n", i, cost, Duration.between(start, Instant.now()).toSeconds());
+                start = Instant.now();
+                if (cost < 0.001) {
+                    break;
+                }
             }
         }
         LoggerUtils.printLine();
-        test();
+//        test();
     }
 
-    private void test() {
-        SimpleMatrix inputs = this.testInputs;
-        SimpleMatrix matrix = new SimpleMatrix(testInputs.getNumRows() + testOutputs.getNumRows(), testInputs.getNumCols());
-
-        for (int i = 0; i < inputs.getNumCols(); i++) {
-            forward(inputs.getColumn(i));
-            matrix.setColumn(i, inputs.getColumn(i).concatRows(layers.getLast().a()));
+    public SimpleMatrix test(SimpleMatrix testInputs) {
+        SimpleMatrix output = new SimpleMatrix(outputs.getNumRows(), testInputs.getNumCols());
+        for (int i = 0; i < testInputs.getNumCols(); i++) {
+            forward(testInputs.getColumn(i));
+            output.setColumn(i, layers.getLast().a());
         }
-        LoggerUtils.print("test", matrix.transpose());
+//        LoggerUtils.print("test", matrix.transpose());
+//        LoggerUtils.print("test", matrix.rows(this.testInputs.getNumRows(), matrix.getNumRows()).transpose());
+        return output;
     }
 
     private void iterate() {
@@ -99,7 +100,7 @@ public class NeuralNetworkMatrix {
         }
     }
 
-    private double cost() {
+    private double cost(SimpleMatrix inputs, SimpleMatrix outputs) {
         double cost = 0;
         for (int c = 0; c < inputs.getNumCols(); c++) {
             forward(inputs.getColumn(c));
@@ -234,5 +235,9 @@ public class NeuralNetworkMatrix {
 
     private String deltaKey(int l) {
         return String.format("delta_%d", l);
+    }
+
+    public List<Layer> layers() {
+        return layers;
     }
 }
