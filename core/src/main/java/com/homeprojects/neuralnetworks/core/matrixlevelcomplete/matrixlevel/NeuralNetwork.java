@@ -16,7 +16,7 @@ import java.util.Random;
 
 import static com.homeprojects.neuralnetworks.core.Utils.sigmoid;
 
-public class NeuralNetworkCompleteMatrix implements Serializable {
+public class NeuralNetwork implements Serializable {
 
     private final Random random;
 
@@ -30,7 +30,7 @@ public class NeuralNetworkCompleteMatrix implements Serializable {
 
     private final int batchSize;
 
-    public NeuralNetworkCompleteMatrix(SimpleMatrix inputs, SimpleMatrix outputs, int[] layersNeuronsCount, double learningRate, int batchSize) {
+    public NeuralNetwork(SimpleMatrix inputs, SimpleMatrix outputs, int[] layersNeuronsCount, double learningRate, int batchSize) {
         this.inputs = inputs;
         this.outputs = outputs;
         this.learningRate = learningRate;

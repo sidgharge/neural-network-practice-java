@@ -2,7 +2,7 @@ package com.homeprojects.neuralnetworks.imagerecognition;
 
 import com.homeprojects.neuralnetworks.core.LoggerUtils;
 import com.homeprojects.neuralnetworks.core.Utils;
-import com.homeprojects.neuralnetworks.core.matrixlevelcomplete.matrixlevel.NeuralNetworkCompleteMatrix;
+import com.homeprojects.neuralnetworks.core.matrixlevelcomplete.matrixlevel.NeuralNetwork;
 import org.ejml.simple.SimpleMatrix;
 
 import java.awt.image.BufferedImage;
@@ -31,7 +31,7 @@ public class ShapeRecognitionMain {
         Instant start = Instant.now();
         System.out.println("Start time: " + start);
 
-        NeuralNetworkCompleteMatrix network = train();
+        NeuralNetwork network = train();
 //        NeuralNetworkCompleteMatrix network = (NeuralNetworkCompleteMatrix)Utils.deserialize(NETWORK_LOC);
         System.out.println("network.cost() = " + network.cost());
         System.out.printf("Time taken %smins\n", Duration.between(start, Instant.now()).toMinutes());
@@ -42,7 +42,7 @@ public class ShapeRecognitionMain {
         manualTest(network);
     }
 
-    private static NeuralNetworkCompleteMatrix train() throws IOException {
+    private static NeuralNetwork train() throws IOException {
         double[][] inputs = new double[SIZE_OF_TRAINING_DATA * 2][ImageUtils.WIDTH * ImageUtils.HEIGHT];
         double[][] outputs = new double[SIZE_OF_TRAINING_DATA * 2][2];
 
@@ -57,7 +57,7 @@ public class ShapeRecognitionMain {
         LoggerUtils.debug = true;
         LoggerUtils.printDims("input", i);
         LoggerUtils.debug = false;
-        NeuralNetworkCompleteMatrix network = new NeuralNetworkCompleteMatrix(i, o,
+        NeuralNetwork network = new NeuralNetwork(i, o,
                 new int[]{20, 10, 2},
                 0.1,
                 BATCH_SIZE);
@@ -101,7 +101,7 @@ public class ShapeRecognitionMain {
     }
 
 
-    private static void test(NeuralNetworkCompleteMatrix network) throws IOException {
+    private static void test(NeuralNetwork network) throws IOException {
         double[][] tia = new double[SIZE_OF_TEST_DATA * 2][ImageUtils.WIDTH * ImageUtils.HEIGHT];
         if (SHOULD_GENERATE_FILES) {
             System.out.println("Generating new test data");
@@ -149,7 +149,7 @@ public class ShapeRecognitionMain {
         LoggerUtils.printLine();
     }
 
-    private static void manualTest(NeuralNetworkCompleteMatrix network) throws IOException {
+    private static void manualTest(NeuralNetwork network) throws IOException {
         try(Scanner scanner = new Scanner(System.in)) {
             System.out.print("Enter image to read: ");
             String filename = scanner.nextLine();

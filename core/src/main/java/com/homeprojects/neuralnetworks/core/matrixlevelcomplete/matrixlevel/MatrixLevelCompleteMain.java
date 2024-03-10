@@ -11,14 +11,14 @@ public class MatrixLevelCompleteMain {
 
     }
 
-    private static NeuralNetworkCompleteMatrix truthTableOr() {
+    private static NeuralNetwork truthTableOr() {
         SimpleMatrix io = new SimpleMatrix(new double[][]{
                 new double[]{1, 1, 0, 0},
                 new double[]{1, 0, 1, 0},
                 new double[]{1, 1, 1, 0},
         });
 
-        return new NeuralNetworkCompleteMatrix(
+        return new NeuralNetwork(
                 io.rows(0, 2),
                 io.rows(2, 3),
                 new int[]{3, 1},
@@ -33,7 +33,7 @@ public class MatrixLevelCompleteMain {
                 new double[]{1, 0, 1, 0},
                 new double[]{1, 0, 0, 0},
         });
-        NeuralNetworkCompleteMatrix network = new NeuralNetworkCompleteMatrix(
+        NeuralNetwork network = new NeuralNetwork(
                 io.rows(0, 2),
                 io.rows(2, 3),
                 new int[]{4, 1},
